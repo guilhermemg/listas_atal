@@ -1,0 +1,1 @@
+/usr/bin/c++   -g    CMakeFiles/lista2.dir/CD.o  -o lista2 -rdynamic 
