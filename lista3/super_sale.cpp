@@ -71,6 +71,16 @@ int process_itens(vector<int> v, vector<int> w, vector<int> Ws) {
 		s = s + ans;
 	}
 	
+	printf("[");
+	for(unsigned int i = 0; i < m.size(); i++) {
+		printf("[");
+		for(unsigned int j = 0; j < m[i].size(); j++) {
+			printf("%d, ", m[i][j]);
+		}
+		printf("]\n");
+	}
+	printf("]\n");
+	
     return s;
 }
 
@@ -108,7 +118,7 @@ int main(){
 	int t2 = process_itens(values[1], weights[1], Ws[2]);
 	printf("t2: %d\n", t2);
 	assert(t2 == 514);
-	printf("----------------------\n");
+	printf("----------------------\n");    
     
     return 0;
 }

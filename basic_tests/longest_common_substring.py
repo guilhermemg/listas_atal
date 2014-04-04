@@ -2,16 +2,12 @@
    Longest Common Substring using Dynamic Programming
 """
 
-m = []
-def __create_matrix(x, y):
-   for i in range(0, len(x)):
+def lcs(x, y):
+	m = []
+	for i in range(0, len(x)):
 	   m.append([])
 	   for j in range(0, len(y)):
 		   m[i].append(0)
-
-
-def lcs(x, y):
-	__create_matrix(x, y)
 	
 	for i in range(1, len(x)):
 		for j in range(1, len(y)):
