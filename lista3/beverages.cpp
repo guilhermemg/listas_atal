@@ -1,168 +1,216 @@
 #include <cstdio>
 #include <cstdlib>
-#include <stack>
+#include <assert.h>
 #include <vector>
 #include <string>
 #include <cstring>
+#include <algorithm>
 
 using namespace std;
 
 struct Node {
     int id;
-    vector<Node> adjs_nodes;
-    //string color;
-    //Node pi;
-    //int d;  // time of discovery
-    //int f;  // time of finalization
+    string color;
+    int pi_id;
+    int d;  // time of discovery
+    int f;  // time of finalization
+	
+	string data;
+	
+    vector<int> adjs_nodes_ids;
     
     Node(int identi) {
 		this->id = identi;
 	}
 	
-	void set_adjs_nodes(vector<Node> adjs) {
-		adjs_nodes = adjs;
+	void set_adjs_nodes(vector<int> adjs) {
+		adjs_nodes_ids = adjs;
 	}
 };
 
-stack<Node> top_sort;
-
-vector<string> color;
-vector<Node> pi;
-vector<int> d;  // time of discovery
-vector<int> f;  // time of finalization
-int t;            // time
+vector<Node> top_sort;
+vector<Node> dag;
 bool found;
+int t;
+void __print_dag() {
+	printf("--------------------------------\n");
+	for(size_t i = 0; i < dag.size(); i++) {
+		printf("Node[%d]: %s :: ", dag[i].id, dag[i].data.c_str());
+		for(size_t j = 0; j < dag[i].adjs_nodes_ids.size(); j++) {
+			printf("%d ", dag[dag[i].adjs_nodes_ids[j]].id);
+		}
+		printf("\n");
+		printf("\td = %d | f = %d | pi_id = %d\n", dag[i].d, dag[i].f, dag[i].pi_id);
+	}
+}
 
-void __start_globals(vector<Node> dag) {
-    for(size_t i = 0; i < dag.size(); i++) {
-		color.push_back("WHITE");
-		pi.push_back(Node(-1));
-		d.push_back(-1);
-		f.push_back(-1);
+void __start_globals(vector<Node> G) {
+    for(size_t i = 0; i < G.size(); i++) {
+		G[i].color = "WHITE";
+		G[i].pi_id = -1;
+		G[i].d = -1;
+		G[i].f = -1;
     }
     
     t = 0;
     found = false;
-    //while(!top_sort.empty()) {
-    //    top_sort.pop();
-	//}
+    dag = G;
 }
 
-void __dfs_visit(Node node, Node node2f) {
-	if (node.id == node2f.id)
+
+void __dfs_visit(int node_id, int node2f_id) {
+	if (node_id == node2f_id)
 		found = true;
 	
-	/*printf("colors -----------\n");
-	for(size_t i = 0; i < color.size(); i++) {
-	    printf("color[%d]: %s\n", i, color[i].c_str());
-	}
-	printf("colors -----------\n");
-	*/
-	
-	color[node.id] = "GRAY";
+	dag[node_id].color = "GRAY";
 	t++;
-	d[node.id] = t;
+	dag[node_id].d = t;
 	
-	//printf("Node[%d]:\n", node.id);
+	vector<int> adj_nodes_ids = dag[node_id].adjs_nodes_ids;
 	
-	vector<Node> adj_nodes = node.adjs_nodes;
-	/*for(size_t i = 0; i < adj_nodes.size(); i++) {
-		printf("adj_node: %d | ", adj_nodes[i].id);
-	}
-	printf("\n");
-	*/
-	
-	for (size_t vli = 0; vli < adj_nodes.size(); vli++) {
-		if ( color[vli].compare("WHITE") == 0 ) {
-			pi[vli] = node;
-			__dfs_visit(adj_nodes[vli], node2f);
+	for (size_t vli = 0; vli < adj_nodes_ids.size(); vli++) {
+		if ( dag[adj_nodes_ids[vli]].color.compare("WHITE") == 0 ) {
+			dag[adj_nodes_ids[vli]].pi_id = node_id;
+			__dfs_visit(adj_nodes_ids[vli], node2f_id);
 		}
 	}
 	
-	/*
-	printf("colors -----------\n");
-	for(size_t i = 0; i < color.size(); i++) {
-	    printf("color[%d]: %s\n", i, color[i].c_str());
-	}
-	printf("colors -----------\n");
-	*/
-	
-	color[node.id] = "BLACK";
+	dag[node_id].color = "BLACK";
 	t++;
-	f[node.id] = t;
+	dag[node_id].f = t;
 	
-	//printf("f -------------- f\n");
-	//print "f: " + str(f);
-	//for(size_t i = 0 ; i < f.size(); i++) {
-		//printf("f: %d\n", f[i]);
-	//}
-	//printf("f -------------- f\n");
+	__print_dag();
 
-	top_sort.push(node);
+	top_sort.push_back(dag[node_id]);
 }
 
-bool dfs(Node node2f, vector<Node> G) {
-    __start_globals(G);
-	
-    for(size_t i = 0; i  < G.size(); i++) {
-		if(color[i].compare("WHITE") == 0) {
-			__dfs_visit(G[i], node2f);
+bool dfs(int node2f_id) {
+    for(size_t i = 0; i < dag.size(); i++) {
+		if((dag[i].color).compare("WHITE") == 0) {
+			__dfs_visit(dag[i].id, node2f_id);
 		}
 	}
 	
     return found;
 }
 
-int topological_sort(vector<Node> dag) {
+void topological_sort(vector<Node> dag) {
+    top_sort.clear();
+    
+    __start_globals(dag);
+	__print_dag();
+    
     for(size_t i = 0; i < dag.size(); i++) {
-		bool b = dfs(dag[i], dag);
-		printf("dfs[%d]: %s\n", dag[i].id, b? "true" : "false");
+		bool b = dfs(dag[i].id);
+		printf("dfs[%d] | data=%s: %s\n", dag[i].id, dag[i].data.c_str(), b? "true" : "false");
 	}
 	
 	printf("top_sort.size: %d\n", (int)top_sort.size());
 	
-	while(!top_sort.empty()) {
-		Node n = top_sort.top();
-		top_sort.pop();
-		printf("Node: %d\n", n.id);
-	}
+	reverse(top_sort.begin(), top_sort.end());
 	
-	return 0;
+	for(size_t i = 0; i < top_sort.size(); i++) {
+		printf("Node: %d | data=%s\n", top_sort[i].id, top_sort[i].data.c_str());
+	}
 }
 
-void __print_dag(vector<Node> g) {
-	
-	for(size_t i = 0; i < g.size(); i++) {
-		printf("Node[%d]\n", g[i].id);
-		for(size_t j = 0; j < g[i].adjs_nodes.size(); j++) {
-			printf("adjs: %d ", g[i].adjs_nodes[j].id);
+void __tests(int N) {
+	if (N == 3) {
+		assert(strcmp(top_sort[0].data.c_str(), "beer") == 0);
+		assert(strcmp(top_sort[1].data.c_str(), "wine") == 0);
+		assert(strcmp(top_sort[2].data.c_str(), "vodka") == 0);
+	}
+	else if(N == 5) {
+		/*assert(strcmp(top_sort[0].data.c_str(), "apple-juice") == 0);
+		assert(strcmp(top_sort[1].data.c_str(), "beer") == 0);
+		assert(strcmp(top_sort[2].data.c_str(), "wine") == 0);
+		assert(strcmp(top_sort[3].data.c_str(), "rum") == 0);
+		assert(strcmp(top_sort[4].data.c_str(), "cachaca") == 0);*/
+	}
+	else if(N == 10) {
+		assert(strcmp(top_sort[0].data.c_str(), "apple-juice") == 0);
+		assert(strcmp(top_sort[1].data.c_str(), "wine") == 0);
+		assert(strcmp(top_sort[2].data.c_str(), "vodka") == 0);
+		assert(strcmp(top_sort[3].data.c_str(), "beer") == 0);
+		assert(strcmp(top_sort[4].data.c_str(), "rum") == 0);
+		assert(strcmp(top_sort[5].data.c_str(), "cachaca") == 0);
+		assert(strcmp(top_sort[6].data.c_str(), "tequila") == 0);
+		assert(strcmp(top_sort[7].data.c_str(), "whiskey") == 0);
+		assert(strcmp(top_sort[8].data.c_str(), "martini") == 0);
+		assert(strcmp(top_sort[9].data.c_str(), "gin") == 0);
+	}
+}
+
+void beverages() {
+    
+    int N;
+    while(scanf("%d", &N) != EOF) {
+		printf("N: %d\n", N);
+		
+		vector<Node> G;
+		for(int i = 0; i < N; i++) {
+			G.push_back(Node(i));
+			string data(51, ' ');
+			scanf("%s", &data[0]);
+			G[i].data = data;
+			
+			printf("data: %s\n", data.c_str());
 		}
-		printf("\n");
+		
+		int M;
+		scanf("%d", &M);
+		
+		printf("M: %d\n", M);
+		
+		string d1(51, ' ');
+		string d2(51, ' ');
+		while(M--) {
+			scanf("%s %s", &d1[0], &d2[0]);
+			printf("rels: %s %s\n", d1.c_str(), d2.c_str());
+			
+			for(size_t i = 0; i < G.size(); i++) {
+				if(strcmp(G[i].data.c_str(), d1.c_str()) == 0) {
+					for(size_t j = 0; j < G.size(); j++) {
+						if(strcmp(G[j].data.c_str(), d2.c_str()) == 0) {
+							G[i].adjs_nodes_ids.push_back(G[j].id);
+						}
+					}
+				}
+			}
+		}
+		
+		dag = G;
+		printf("==============================\n");
+		__print_dag();
+		printf("==============================\n");
+		
+		topological_sort(G);
+		
+		__tests(N);
 	}
 }
 
 int main() {
-    vector<Node> dag;
-    
+/*  
     Node n0(0), n1(1), n2(2), n3(3), n4(4), n5(5);
     
-    vector<Node> adjs0;
-    adjs0.push_back(n1);
-    adjs0.push_back(n3);
+    vector<int> adjs0;
+    adjs0.push_back(1);
+    adjs0.push_back(3);
     n0.set_adjs_nodes(adjs0);
     
-    vector<Node> adjs1;
-    adjs1.push_back(n2);
+    vector<int> adjs1;
+    adjs1.push_back(2);
     n1.set_adjs_nodes(adjs1);
     
-    vector<Node> adjs3;
-    adjs3.push_back(n1);
-    adjs3.push_back(n2);
+    vector<int> adjs3;
+    adjs3.push_back(1);
+    adjs3.push_back(2);
     n3.set_adjs_nodes(adjs3);
     
-    vector<Node> adjs4;
-    adjs4.push_back(n2);
-    adjs4.push_back(n5);
+    vector<int> adjs4;
+    adjs4.push_back(2);
+    adjs4.push_back(5);
     n4.set_adjs_nodes(adjs4);
     
     dag.push_back(n0);
@@ -171,10 +219,16 @@ int main() {
     dag.push_back(n3);
     dag.push_back(n4);
     dag.push_back(n5);
+*/ 
     
-    __print_dag(dag);
-    
-    topological_sort(dag);
-    
+    beverages();
+   
+/*    assert(top_sort[0].id == 4);
+    assert(top_sort[1].id == 5);
+    assert(top_sort[2].id == 0);
+    assert(top_sort[3].id == 3);
+    assert(top_sort[4].id == 1);
+    assert(top_sort[5].id == 2);
+ */   
     return 0;
 }

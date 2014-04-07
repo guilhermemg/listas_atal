@@ -76,8 +76,10 @@ def __dfs_visit(node, node2f, G_e):
 	
 	d[node] = time
 	
+	print "d= " + str(d)
+	
 	adj_vs = __getAdjs(node, G_e)
-	print "adjs: " + str(adj_vs)
+	print "node = %d adjs: " % node,str(adj_vs)
 	
 	for vl in adj_vs:
 		if color[vl] == 'WHITE':
