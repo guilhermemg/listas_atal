@@ -7,66 +7,47 @@ def __create_matrix(n, W):
 			m[i].append(0)
 
 
-def find_max_value(v, w, W, itens):
-	print "v: " + str(v)
-	print "w: " + str(w)
-	print "W: " + str(W)
+def find_max_value(v, w, W):
+	n = len(v)
 	
-	new_v = [0]
-	new_w = [0]
+	__create_matrix(n, W)
 	
-	for vl in v:
-		new_v.append(vl)
-	
-	for wl in w:
-		new_w.append(wl)
-		
-	print "new_v: " + str(new_v)
-	print "new_w: " + str(new_w)
-	
-	new_n = len(new_v)
-	new_W = W + 1
-	
-	__create_matrix(new_n, new_W)
-	
-	for i in range(1, new_n):
-		for j in range(1, new_W):
-			if( new_w[i] > j ):
+	for i in range(1, n):
+		for j in range(1, W):
+			if( w[i] > j ):
 				m[i][j] = m[i-1][j]
 			else:
-				x = new_v[i] + m[i-1][j - new_w[i]]
-				y = m[i-1][j]
-				mxy = -1
-				if x > y:
-					mxy = x
-					itens[i] = 1
-				else:
-					mxy = y
-				
-				m[i][j] = mxy
+				m[i][j] = max(v[i] + m[i-1][j - w[i]], m[i-1][j])
 	
-	print "itens: " + str(itens)
-	
-	return (m[len(v)][W], itens)
+	return m[n-1][W-1]
 
 def process_itens(v, w, Ws): 
-    # itens = available itens
+    print "v: " + str(v)
+    print "w: " + str(w)
+    print "Ws: " + str(Ws)
     
-    itens = [0 for i in range(0, len(v)+1)]
+    new_v = [0]
+    new_w = [0]
     
-    Ws.sort()
-    
-    vals = v
-    ws = w
+    for vl in v:
+		new_v.append(vl)
+
+    for wl in w:
+		new_w.append(wl)
+	
+    print "new_v: " + str(new_v)
+    print "new_w: " + str(new_w)
+	
+    vals = new_v
+    ws = new_w
     s = 0
     for W in Ws:
-		ans = find_max_value(vals, ws, W, itens)
-		s = s + ans[0]
-		for i in range(0, len(ans[1])):
-			if i == 1:
-				vals.pop(i)
-				ws.pop(i)
-	
+		print "W: " + str(W)
+		
+		ans = find_max_value(vals, ws, W)
+		
+		s = s + ans
+		
     return s
 	
 
@@ -85,7 +66,7 @@ if __name__ == '__main__':
 	assert t3 == 116
 	print "----------------------"
 	
-	t2 = process_itens(values[1], weights[1], Ws[1])
+	t2 = process_itens(values[1], weights[1], Ws[2])
 	print "t2: " + str(t2)
 	assert t2 == 514
 	print "----------------------"

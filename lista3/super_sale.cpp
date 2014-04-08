@@ -71,20 +71,11 @@ int process_itens(vector<int> v, vector<int> w, vector<int> Ws) {
 		s = s + ans;
 	}
 	
-	printf("[");
-	for(unsigned int i = 0; i < m.size(); i++) {
-		printf("[");
-		for(unsigned int j = 0; j < m[i].size(); j++) {
-			printf("%d, ", m[i][j]);
-		}
-		printf("]\n");
-	}
-	printf("]\n");
-	
     return s;
 }
 
 int main(){
+/*
     vector< vector<int> > values;
     int a1[] = {72, 44, 31};
     int a2[] = {64, 85, 52, 99, 39, 54};
@@ -118,7 +109,36 @@ int main(){
 	int t2 = process_itens(values[1], weights[1], Ws[2]);
 	printf("t2: %d\n", t2);
 	assert(t2 == 514);
-	printf("----------------------\n");    
+	printf("----------------------\n");
+
+*/
     
-    return 0;
+    int T;
+    scanf("%d\n", &T);
+    
+    while(T--) {
+		vector<int> values;
+		vector<int> weights;
+		vector<int> Ws;
+		
+		int N;
+		scanf("%d\n", &N);
+		int P, W;
+		while(N--) {
+			scanf("%d %d\n", &P, &W);
+			weights.push_back(W);
+			values.push_back(P);
+		}
+		int G, MW;
+		scanf("%d\n", &G);
+		while(G--) {
+			scanf("%d\n", &MW);
+			Ws.push_back(MW);
+		}
+		
+		int result = process_itens(values, weights, Ws);
+		printf("%d\n", result);
+	}
+	
+	return 0;
 }
