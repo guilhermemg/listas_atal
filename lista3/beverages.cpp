@@ -32,15 +32,16 @@ vector<Node> top_sort;
 vector<Node> dag;
 bool found;
 int t;
+
 void __print_dag() {
-	printf("--------------------------------\n");
+	//printf("--------------------------------\n");
 	for(size_t i = 0; i < dag.size(); i++) {
-		printf("Node[%d]: %s :: ", dag[i].id, dag[i].data.c_str());
+		//printf("Node[%d]: %s :: ", dag[i].id, dag[i].data.c_str());
 		for(size_t j = 0; j < dag[i].adjs_nodes_ids.size(); j++) {
-			printf("%d ", dag[dag[i].adjs_nodes_ids[j]].id);
+			//printf("%d ", dag[dag[i].adjs_nodes_ids[j]].id);
 		}
-		printf("\n");
-		printf("\td = %d | f = %d | pi_id = %d\n", dag[i].d, dag[i].f, dag[i].pi_id);
+		//printf("\n");
+		//printf("\td = %d | f = %d | pi_id = %d\n", dag[i].d, dag[i].f, dag[i].pi_id);
 	}
 }
 
@@ -98,46 +99,19 @@ void topological_sort(vector<Node> dag) {
     top_sort.clear();
     
     __start_globals(dag);
-	__print_dag();
+	//__print_dag();
     
-    for(size_t i = 0; i < dag.size(); i++) {
+    /*for(size_t i = 0; i < dag.size(); i++) {
 		bool b = dfs(dag[i].id);
-		printf("dfs[%d] | data=%s: %s\n", dag[i].id, dag[i].data.c_str(), b? "true" : "false");
-	}
+		//printf("dfs[%d] | data=%s: %s\n", dag[i].id, dag[i].data.c_str(), b? "true" : "false");
+	}*/
 	
-	printf("top_sort.size: %d\n", (int)top_sort.size());
+	//printf("top_sort.size: %d\n", (int)top_sort.size());
 	
 	reverse(top_sort.begin(), top_sort.end());
 	
 	for(size_t i = 0; i < top_sort.size(); i++) {
-		printf("Node: %d | data=%s\n", top_sort[i].id, top_sort[i].data.c_str());
-	}
-}
-
-void __tests(int N) {
-	if (N == 3) {
-		assert(strcmp(top_sort[0].data.c_str(), "beer") == 0);
-		assert(strcmp(top_sort[1].data.c_str(), "wine") == 0);
-		assert(strcmp(top_sort[2].data.c_str(), "vodka") == 0);
-	}
-	else if(N == 5) {
-		/*assert(strcmp(top_sort[0].data.c_str(), "apple-juice") == 0);
-		assert(strcmp(top_sort[1].data.c_str(), "beer") == 0);
-		assert(strcmp(top_sort[2].data.c_str(), "wine") == 0);
-		assert(strcmp(top_sort[3].data.c_str(), "rum") == 0);
-		assert(strcmp(top_sort[4].data.c_str(), "cachaca") == 0);*/
-	}
-	else if(N == 10) {
-		assert(strcmp(top_sort[0].data.c_str(), "apple-juice") == 0);
-		assert(strcmp(top_sort[1].data.c_str(), "wine") == 0);
-		assert(strcmp(top_sort[2].data.c_str(), "vodka") == 0);
-		assert(strcmp(top_sort[3].data.c_str(), "beer") == 0);
-		assert(strcmp(top_sort[4].data.c_str(), "rum") == 0);
-		assert(strcmp(top_sort[5].data.c_str(), "cachaca") == 0);
-		assert(strcmp(top_sort[6].data.c_str(), "tequila") == 0);
-		assert(strcmp(top_sort[7].data.c_str(), "whiskey") == 0);
-		assert(strcmp(top_sort[8].data.c_str(), "martini") == 0);
-		assert(strcmp(top_sort[9].data.c_str(), "gin") == 0);
+		//printf("Node: %d | data=%s\n", top_sort[i].id, top_sort[i].data.c_str());
 	}
 }
 
@@ -145,8 +119,7 @@ void beverages() {
     
     int N;
     while(scanf("%d", &N) != EOF) {
-		printf("N: %d\n", N);
-		
+	
 		vector<Node> G;
 		for(int i = 0; i < N; i++) {
 			G.push_back(Node(i));
@@ -154,19 +127,19 @@ void beverages() {
 			scanf("%s", &data[0]);
 			G[i].data = data;
 			
-			printf("data: %s\n", data.c_str());
+			//printf("data: %s\n", data.c_str());
 		}
 		
 		int M;
 		scanf("%d", &M);
 		
-		printf("M: %d\n", M);
+		//printf("M: %d\n", M);
 		
 		string d1(51, ' ');
 		string d2(51, ' ');
 		while(M--) {
 			scanf("%s %s", &d1[0], &d2[0]);
-			printf("rels: %s %s\n", d1.c_str(), d2.c_str());
+			//printf("rels: %s %s\n", d1.c_str(), d2.c_str());
 			
 			for(size_t i = 0; i < G.size(); i++) {
 				if(strcmp(G[i].data.c_str(), d1.c_str()) == 0) {
@@ -180,13 +153,8 @@ void beverages() {
 		}
 		
 		dag = G;
-		printf("==============================\n");
-		__print_dag();
-		printf("==============================\n");
-		
 		topological_sort(G);
 		
-		__tests(N);
 	}
 }
 
